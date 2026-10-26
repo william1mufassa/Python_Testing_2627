@@ -104,6 +104,12 @@ def apply_booking(club, competition, places, bookings):
     bookings[key] = bookings.get(key, 0) + places
 
 
+def points_board(clubs):
+    """Nom et points de chaque club, triés par nom (sans les e-mails)."""
+    rows = [{'name': club['name'], 'points': club['points']} for club in clubs]
+    return sorted(rows, key=lambda row: row['name'])
+
+
 def booking_success_message(places):
     return f"Great-booking complete! You booked {places} place(s)."
 
@@ -183,7 +189,10 @@ def purchasePlaces():
     return render_template('welcome.html', club=club, competitions=competitions)
 
 
-# TODO: Add route for points display
+@app.route('/pointsBoard')
+def pointsBoard():
+    """Tableau public, en lecture seule, des points de tous les clubs."""
+    return render_template('points.html', board=points_board(clubs))
 
 
 @app.route('/logout')

@@ -5,7 +5,7 @@
     <title>Summary | GUDLFT Registration</title>
 </head>
 <body>
-    <h2>Welcome, {{club['email']}} </h2><a href="{{url_for('logout')}}">Logout</a>
+    <h2>Welcome, {{club['email']}} </h2><a href="{{url_for('logout')}}">Logout</a> | <a href="{{url_for('pointsBoard')}}">Points board</a>
     {% include 'messages.html' %}
     Points available: {{club['points']}}
     <h3>Competitions:</h3>
