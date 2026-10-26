@@ -47,11 +47,18 @@ def competitions():
     return build_competitions()
 
 
+@pytest.fixture
+def bookings():
+    """Places déjà réservées : {(nom_competition, nom_club): nombre}."""
+    return {}
+
+
 @pytest.fixture(autouse=True)
-def isolated_data(monkeypatch, clubs, competitions):
+def isolated_data(monkeypatch, clubs, competitions, bookings):
     """Remplace les données globales du serveur pour chaque test."""
     monkeypatch.setattr(server, "clubs", clubs)
     monkeypatch.setattr(server, "competitions", competitions)
+    monkeypatch.setattr(server, "bookings", bookings, raising=False)
 
 
 @pytest.fixture
