@@ -24,3 +24,10 @@ def test_purchase_accepted_when_club_spends_exactly_its_points(client):
     assert response.status_code == 200
     assert b"Great-booking complete!" in response.data
     assert find(server.competitions, "Future Open")["numberOfPlaces"] == 21
+
+
+def test_booking_form_limits_places_to_club_points(client):
+    response = client.get("/book/Future Open/Small Club")
+
+    assert b'min="1"' in response.data
+    assert b'max="4"' in response.data
