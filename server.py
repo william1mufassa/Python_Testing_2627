@@ -21,6 +21,20 @@ def loadCompetitions(path=COMPETITIONS_FILE):
         return listOfCompetitions
 
 
+def prepare_clubs(clubs):
+    """Convertit les points (chaînes dans le JSON) en entiers."""
+    for club in clubs:
+        club['points'] = int(club['points'])
+    return clubs
+
+
+def prepare_competitions(competitions):
+    """Convertit le nombre de places (chaînes dans le JSON) en entiers."""
+    for competition in competitions:
+        competition['numberOfPlaces'] = int(competition['numberOfPlaces'])
+    return competitions
+
+
 def find_club_by_email(email, clubs):
     """Renvoie le club dont l'e-mail correspond, ou None."""
     if not email:
@@ -68,9 +82,9 @@ def validate_booking(club, competition, places, already_booked=0):
         return "This competition has already taken place."
     if already_booked + places > MAX_PLACES_PER_COMPETITION:
         return "You cannot book more than 12 places per competition."
-    if places > int(competition['numberOfPlaces']):
+    if places > competition['numberOfPlaces']:
         return "Not enough places available in this competition."
-    if places > int(club['points']):
+    if places > club['points']:
         return "You do not have enough points."
     return None
 
@@ -78,16 +92,28 @@ def validate_booking(club, competition, places, already_booked=0):
 def max_bookable_places(club, competition, already_booked=0):
     """Nombre maximal de places que le club peut encore réserver (pour le formulaire)."""
     return max(0, min(MAX_PLACES_PER_COMPETITION - already_booked,
-                      int(competition['numberOfPlaces']),
-                      int(club['points'])))
+                      competition['numberOfPlaces'],
+                      club['points']))
+
+
+def apply_booking(club, competition, places, bookings):
+    """Enregistre une réservation validée : 1 point dépensé par place."""
+    club['points'] -= places
+    competition['numberOfPlaces'] -= places
+    key = (competition['name'], club['name'])
+    bookings[key] = bookings.get(key, 0) + places
+
+
+def booking_success_message(places):
+    return f"Great-booking complete! You booked {places} place(s)."
 
 
 app = Flask(__name__)
 app.secret_key = 'something_special'
 app.jinja_env.globals['is_competition_past'] = is_competition_past
 
-competitions = loadCompetitions()
-clubs = loadClubs()
+competitions = prepare_competitions(loadCompetitions())
+clubs = prepare_clubs(loadClubs())
 # Places réservées par club et par compétition : {(nom_competition, nom_club): nombre}
 bookings = {}
 
@@ -152,10 +178,8 @@ def purchasePlaces():
     if error:
         flash(error)
         return render_booking(club, competition, 400)
-    competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
-    key = (competition['name'], club['name'])
-    bookings[key] = bookings.get(key, 0) + placesRequired
-    flash('Great-booking complete!')
+    apply_booking(club, competition, placesRequired, bookings)
+    flash(booking_success_message(placesRequired))
     return render_template('welcome.html', club=club, competitions=competitions)
 
 

@@ -26,7 +26,7 @@ def test_booking_is_refused_when_club_is_one_point_short(clubs, competitions):
 
 
 def test_booking_is_refused_when_club_has_no_points(clubs, competitions):
-    club = dict(find(clubs, "Small Club"), points="0")
+    club = dict(find(clubs, "Small Club"), points=0)
     competition = find(competitions, "Future Open")
 
     assert server.validate_booking(club, competition, 1) == NOT_ENOUGH_POINTS
@@ -38,5 +38,5 @@ def test_validation_does_not_modify_club_or_competition(clubs, competitions):
 
     server.validate_booking(club, competition, 5)
 
-    assert club["points"] == "4"
-    assert competition["numberOfPlaces"] == "25"
+    assert club["points"] == 4
+    assert competition["numberOfPlaces"] == 25

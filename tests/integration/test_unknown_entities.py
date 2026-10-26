@@ -41,5 +41,5 @@ def test_purchase_with_unknown_club_or_competition_changes_nothing(client, form)
 
     assert response.status_code == 404
     assert b"Something went wrong-please try again" in response.data
-    assert find(server.competitions, "Future Open")["numberOfPlaces"] == "25"
-    assert find(server.clubs, "Alpha Club")["points"] == "20"
+    assert find(server.competitions, "Future Open")["numberOfPlaces"] == 25
+    assert find(server.clubs, "Alpha Club")["points"] == 20

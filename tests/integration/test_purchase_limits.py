@@ -10,9 +10,9 @@ def purchase(client, club, competition, places):
     })
 
 
-def assert_nothing_changed(bookings, competition="Future Open", places="25"):
+def assert_nothing_changed(bookings, competition="Future Open", places=25):
     assert find(server.competitions, competition)["numberOfPlaces"] == places
-    assert find(server.clubs, "Rich Club")["points"] == "30"
+    assert find(server.clubs, "Rich Club")["points"] == 30
     assert bookings == {}
 
 
@@ -40,7 +40,7 @@ def test_purchase_refused_when_not_enough_places_left(client, bookings):
 
     assert response.status_code == 400
     assert b"Not enough places available in this competition." in response.data
-    assert_nothing_changed(bookings, "Small Cup", "5")
+    assert_nothing_changed(bookings, "Small Cup", 5)
 
 
 @pytest.mark.parametrize("places", ["", "abc", "0", "-3"])

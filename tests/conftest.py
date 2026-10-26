@@ -39,12 +39,14 @@ def build_competitions():
 
 @pytest.fixture
 def clubs():
-    return deepcopy(CLUBS)
+    """Clubs préparés comme au démarrage de l'application (points en entiers)."""
+    return server.prepare_clubs(deepcopy(CLUBS))
 
 
 @pytest.fixture
 def competitions():
-    return build_competitions()
+    """Compétitions préparées comme au démarrage (places en entiers)."""
+    return server.prepare_competitions(build_competitions())
 
 
 @pytest.fixture

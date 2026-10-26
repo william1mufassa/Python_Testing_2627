@@ -44,7 +44,7 @@ def test_find_club_by_name_returns_none_for_missing_name(clubs):
 def test_find_competition_by_name_returns_matching_competition(competitions):
     competition = server.find_competition_by_name("Small Cup", competitions)
 
-    assert competition["numberOfPlaces"] == "5"
+    assert competition["numberOfPlaces"] == 5
 
 
 def test_find_competition_by_name_returns_none_for_unknown_name(competitions):

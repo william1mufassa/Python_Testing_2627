@@ -14,8 +14,8 @@ def test_purchase_refused_when_club_has_not_enough_points(client):
     assert response.status_code == 400
     assert b"You do not have enough points." in response.data
     assert b"How many places?" in response.data  # la page de réservation est réaffichée
-    assert find(server.competitions, "Future Open")["numberOfPlaces"] == "25"
-    assert find(server.clubs, "Small Club")["points"] == "4"
+    assert find(server.competitions, "Future Open")["numberOfPlaces"] == 25
+    assert find(server.clubs, "Small Club")["points"] == 4
 
 
 def test_purchase_accepted_when_club_spends_exactly_its_points(client):
