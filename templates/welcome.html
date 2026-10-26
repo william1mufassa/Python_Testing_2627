@@ -19,6 +19,8 @@
             Competition over
             {% elif comp['numberOfPlaces']|int > 0 %}
             <a href="{{ url_for('book',competition=comp['name'],club=club['name']) }}">Book Places</a>
+            {% else %}
+            Competition full
             {% endif %}
         </li>
         <hr />
