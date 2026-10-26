@@ -20,6 +20,24 @@ def loadCompetitions(path=COMPETITIONS_FILE):
         return listOfCompetitions
 
 
+def find_club_by_email(email, clubs):
+    """Renvoie le club dont l'e-mail correspond, ou None."""
+    if not email:
+        return None
+    email = email.strip()
+    return next((club for club in clubs if club['email'] == email), None)
+
+
+def find_club_by_name(name, clubs):
+    """Renvoie le club portant ce nom, ou None."""
+    return next((club for club in clubs if club['name'] == name), None)
+
+
+def find_competition_by_name(name, competitions):
+    """Renvoie la compétition portant ce nom, ou None."""
+    return next((comp for comp in competitions if comp['name'] == name), None)
+
+
 app = Flask(__name__)
 app.secret_key = 'something_special'
 
@@ -32,27 +50,38 @@ def index():
     return render_template('index.html')
 
 
+def not_found(club):
+    """Page renvoyée quand le club ou la compétition demandés n'existent pas."""
+    flash("Something went wrong-please try again")
+    if club is None:
+        return render_template('index.html'), 404
+    return render_template('welcome.html', club=club, competitions=competitions), 404
+
+
 @app.route('/showSummary', methods=['POST'])
 def showSummary():
-    club = [club for club in clubs if club['email'] == request.form['email']][0]
+    club = find_club_by_email(request.form.get('email'), clubs)
+    if club is None:
+        flash("Sorry, that email was not found.")
+        return render_template('index.html'), 401
     return render_template('welcome.html', club=club, competitions=competitions)
 
 
 @app.route('/book/<competition>/<club>')
 def book(competition, club):
-    foundClub = [c for c in clubs if c['name'] == club][0]
-    foundCompetition = [c for c in competitions if c['name'] == competition][0]
-    if foundClub and foundCompetition:
-        return render_template('booking.html', club=foundClub, competition=foundCompetition)
-    else:
-        flash("Something went wrong-please try again")
-        return render_template('welcome.html', club=club, competitions=competitions)
+    foundClub = find_club_by_name(club, clubs)
+    foundCompetition = find_competition_by_name(competition, competitions)
+    if foundClub is None or foundCompetition is None:
+        return not_found(foundClub)
+    return render_template('booking.html', club=foundClub, competition=foundCompetition)
 
 
 @app.route('/purchasePlaces', methods=['POST'])
 def purchasePlaces():
-    competition = [c for c in competitions if c['name'] == request.form['competition']][0]
-    club = [c for c in clubs if c['name'] == request.form['club']][0]
+    competition = find_competition_by_name(request.form.get('competition'), competitions)
+    club = find_club_by_name(request.form.get('club'), clubs)
+    if club is None or competition is None:
+        return not_found(club)
     placesRequired = int(request.form['places'])
     competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
     flash('Great-booking complete!')
