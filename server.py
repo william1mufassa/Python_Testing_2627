@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime
 
 from flask import Flask, render_template, request, redirect, flash, url_for
 
@@ -39,6 +40,13 @@ def find_competition_by_name(name, competitions):
 
 
 MAX_PLACES_PER_COMPETITION = 12
+DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
+
+
+def is_competition_past(competition, now=None):
+    """Vrai si la compétition a déjà commencé (date <= maintenant)."""
+    now = now or datetime.now()
+    return datetime.strptime(competition['date'], DATE_FORMAT) <= now
 
 
 def parse_places(value):
@@ -56,6 +64,8 @@ def validate_booking(club, competition, places, already_booked=0):
     already_booked : places déjà réservées par ce club dans cette compétition.
     Un point est dépensé par place réservée.
     """
+    if is_competition_past(competition):
+        return "This competition has already taken place."
     if already_booked + places > MAX_PLACES_PER_COMPETITION:
         return "You cannot book more than 12 places per competition."
     if places > int(competition['numberOfPlaces']):
@@ -74,6 +84,7 @@ def max_bookable_places(club, competition, already_booked=0):
 
 app = Flask(__name__)
 app.secret_key = 'something_special'
+app.jinja_env.globals['is_competition_past'] = is_competition_past
 
 competitions = loadCompetitions()
 clubs = loadClubs()
@@ -120,6 +131,9 @@ def book(competition, club):
     foundCompetition = find_competition_by_name(competition, competitions)
     if foundClub is None or foundCompetition is None:
         return not_found(foundClub)
+    if is_competition_past(foundCompetition):
+        flash("This competition has already taken place.")
+        return render_template('welcome.html', club=foundClub, competitions=competitions), 400
     return render_booking(foundClub, foundCompetition)
 
 
