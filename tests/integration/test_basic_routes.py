@@ -18,3 +18,11 @@ def test_logout_redirects_to_index(client):
 
     assert response.status_code == 302
     assert response.headers["Location"].endswith("/")
+
+
+def test_booking_page_is_displayed_for_known_club_and_competition(client):
+    response = client.get("/book/Future Open/Alpha Club")
+
+    assert response.status_code == 200
+    assert b"Future Open" in response.data
+    assert b"Places available: 25" in response.data
