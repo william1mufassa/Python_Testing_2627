@@ -38,6 +38,16 @@ def find_competition_by_name(name, competitions):
     return next((comp for comp in competitions if comp['name'] == name), None)
 
 
+def validate_booking(club, competition, places):
+    """Renvoie None si la réservation est possible, sinon le message d'erreur.
+
+    Un point est dépensé par place réservée.
+    """
+    if places > int(club['points']):
+        return "You do not have enough points."
+    return None
+
+
 app = Flask(__name__)
 app.secret_key = 'something_special'
 
@@ -83,6 +93,10 @@ def purchasePlaces():
     if club is None or competition is None:
         return not_found(club)
     placesRequired = int(request.form['places'])
+    error = validate_booking(club, competition, placesRequired)
+    if error:
+        flash(error)
+        return render_template('booking.html', club=club, competition=competition), 400
     competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
     flash('Great-booking complete!')
     return render_template('welcome.html', club=club, competitions=competitions)
