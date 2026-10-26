@@ -13,11 +13,11 @@
         {% for comp in competitions%}
         <li>
             {{comp['name']}}<br />
-            Date: {{comp['date']}}</br>
+            Date: {{comp['date']}}<br />
             Number of Places: {{comp['numberOfPlaces']}}
             {% if is_competition_past(comp) %}
             Competition over
-            {% elif comp['numberOfPlaces']|int > 0 %}
+            {% elif comp['numberOfPlaces'] > 0 %}
             <a href="{{ url_for('book',competition=comp['name'],club=club['name']) }}">Book Places</a>
             {% else %}
             Competition full

@@ -22,8 +22,8 @@ def test_purchase_refused_for_past_competition(client, bookings):
 
     assert response.status_code == 400
     assert PAST in response.data
-    assert find(server.competitions, "Past Classic")["numberOfPlaces"] == "10"
-    assert find(server.clubs, "Rich Club")["points"] == "30"
+    assert find(server.competitions, "Past Classic")["numberOfPlaces"] == 10
+    assert find(server.clubs, "Rich Club")["points"] == 30
     assert bookings == {}
 
 

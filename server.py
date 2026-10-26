@@ -82,9 +82,9 @@ def validate_booking(club, competition, places, already_booked=0):
         return "This competition has already taken place."
     if already_booked + places > MAX_PLACES_PER_COMPETITION:
         return "You cannot book more than 12 places per competition."
-    if places > int(competition['numberOfPlaces']):
+    if places > competition['numberOfPlaces']:
         return "Not enough places available in this competition."
-    if places > int(club['points']):
+    if places > club['points']:
         return "You do not have enough points."
     return None
 
@@ -92,14 +92,14 @@ def validate_booking(club, competition, places, already_booked=0):
 def max_bookable_places(club, competition, already_booked=0):
     """Nombre maximal de places que le club peut encore réserver (pour le formulaire)."""
     return max(0, min(MAX_PLACES_PER_COMPETITION - already_booked,
-                      int(competition['numberOfPlaces']),
-                      int(club['points'])))
+                      competition['numberOfPlaces'],
+                      club['points']))
 
 
 def apply_booking(club, competition, places, bookings):
     """Enregistre une réservation validée : 1 point dépensé par place."""
-    club['points'] = int(club['points']) - places
-    competition['numberOfPlaces'] = int(competition['numberOfPlaces']) - places
+    club['points'] -= places
+    competition['numberOfPlaces'] -= places
     key = (competition['name'], club['name'])
     bookings[key] = bookings.get(key, 0) + places
 
