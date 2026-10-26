@@ -1,7 +1,29 @@
+# Environnements virtuels
 bin
 include
 lib
+Lib
+Scripts
+pyvenv.cfg
 .Python
-tests/
+venv/
+.venv/
+env/
 .envrc
-__pycache__
+.env
+
+# Cache Python
+__pycache__/
+*.py[cod]
+
+# Outils de test et de couverture (les rapports versionnés sont dans reports/)
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Systèmes d'exploitation et éditeurs
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
